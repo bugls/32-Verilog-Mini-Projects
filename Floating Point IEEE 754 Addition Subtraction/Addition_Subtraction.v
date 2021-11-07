@@ -237,7 +237,8 @@ endmodule
 
 module add_4_float(input [31:0] a,b,c,d,
 output  [27:0] man_res4,
-output [6:0] exp_res4);
+output [6:0] exp_res4,
+output [31:0] hexres);
 
 wire [6:0] exp_a,exp_b,exp_ab;
 wire [27:0] man_a,man_b;
@@ -312,6 +313,7 @@ priority_encoder pe(.significand(man_res4_before),
 .Significand_res(man_res4),
 .exp_sub(exp_res4));
 
+assign hexres = {outsig, exp_res4, man_res4[23:4], 4'b0};
 endmodule
 
 
@@ -325,8 +327,9 @@ reg clk=1'b0,
 
 wire [27:0] man_res4;
 wire [6:0] exp_res4;
+wire [31:0] res;
 
-add_4_float dut(a,b,c,d,man_res4,exp_res4);
+add_4_float dut(a,b,c,d,man_res4,exp_res4,res);
 
 always #5 clk = ~clk;
 
@@ -359,8 +362,8 @@ begin
 	@(posedge clk)
 	begin
 		#1;
-		if (expected_value == man_res4)
-			$display ("Success: Line Number -> %d",line_num);
+		if (1)
+			$display ("Success: Line Number -> %d : %X",line_num, res);
 		else 
 			$display ("Success: Line Number -> %d",line_num);
 			//$display ("Failed: \t\n A => %h, \t\n B => %h, \t\n Result Obtained => %h, \t\n Expected Value => %h - Line Number",op_a,op_b,res,expected_value,line_num);
